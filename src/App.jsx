@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 const articles = [
   {
     outlet: 'The City Ledger',
@@ -26,6 +28,13 @@ const articles = [
 ];
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const visibleArticles = articles.filter((article) =>
+    `${article.title} ${article.outlet} ${article.category} ${article.description}`
+      .toLowerCase()
+      .includes(searchTerm.trim().toLowerCase()),
+  );
+
   return (
     <main className="page-shell">
       <header className="topbar">
@@ -49,19 +58,27 @@ function App() {
         <div className="feed-heading-row">
           <div>
             <p className="eyebrow muted">A STARTING POINT</p>
-            <h2 id="feed-heading">Recent stories <span className="story-count">03</span></h2>
+            <h2 id="feed-heading">Recent stories <span className="story-count">{String(visibleArticles.length).padStart(2, '0')}</span></h2>
           </div>
           <label className="search-box">
             <span aria-hidden="true">⌕</span>
-            <input type="search" placeholder="Search stories" aria-label="Search stories" />
+            <input
+              type="search"
+              placeholder="Search stories"
+              aria-label="Search stories"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
             <kbd>/</kbd>
           </label>
         </div>
 
         <div className="article-list">
-          {articles.map((article, index) => (
+          {visibleArticles.length > 0 ? visibleArticles.map((article) => {
+            const originalIndex = articles.indexOf(article);
+            return (
             <article className="article-card" key={article.title}>
-              <div className="article-index">0{index + 1}</div>
+              <div className="article-index">{String(originalIndex + 1).padStart(2, '0')}</div>
               <div className="article-content">
                 <div className="article-meta">
                   <span className="category">{article.category}</span>
@@ -75,12 +92,18 @@ function App() {
                   Check this news <span aria-hidden="true">↗</span>
                 </button>
               </div>
-              <div className={`article-art art-${index + 1}`} aria-hidden="true">
-                <span>{['CITY\nLIFE', 'FIELD\nNOTES', 'CAMPUS\nDESK'][index]}</span>
+              <div className={`article-art art-${originalIndex + 1}`} aria-hidden="true">
+                <span>{['CITY\nLIFE', 'FIELD\nNOTES', 'CAMPUS\nDESK'][originalIndex]}</span>
                 <i />
               </div>
             </article>
-          ))}
+          ); }) : (
+            <div className="empty-state">
+              <span className="empty-mark">⌕</span>
+              <h3>No matching stories</h3>
+              <p>Try a different word, outlet, or topic.</p>
+            </div>
+          )}
         </div>
       </section>
 

@@ -41,6 +41,10 @@ button, input { font: inherit; }
 kbd { font: 10px 'DM Mono', monospace; border: 1px solid #d6e2d5; padding: 2px 5px; }
 .article-list { border-top: 1px solid #d7e3d6; }
 .article-card { display: grid; grid-template-columns: 37px minmax(0, 1fr) 160px; gap: 18px; min-height: 166px; padding: 23px 0; border-bottom: 1px solid #d7e3d6; }
+.empty-state { min-height: 190px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #718474; }
+.empty-mark { color: #4d8b62; font-size: 25px; line-height: 1; }
+.empty-state h3 { margin: 12px 0 4px; color: #294331; font: 400 21px 'DM Serif Display', serif; }
+.empty-state p { margin: 0; font-size: 12px; }
 .article-index { color: #89998a; font: 10px 'DM Mono', monospace; padding-top: 4px; }
 .article-meta { display: flex; align-items: center; gap: 8px; color: #88897f; font-size: 10px; }
 .category { color: #427653; font: 500 9px 'DM Mono', monospace; letter-spacing: .4px; }
