@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k \"npm:dev:server\" \"npm:dev:client\"",
+    "dev": "concurrently -k \"npm:dev:python\" \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:python": "python -m uvicorn analysis_service.main:app --reload --port 8000",
     "dev:client": "vite",
     "dev:server": "node server.js",
     "build": "vite build"
@@ -12,10 +13,10 @@
   "dependencies": {
     "@vitejs/plugin-react": "latest",
     "concurrently": "latest",
+    "dotenv": "^18.0.9",
     "express": "latest",
-    "vite": "latest",
     "react": "latest",
-    "react-dom": "latest"
-  },
-  "devDependencies": {}
+    "react-dom": "latest",
+    "vite": "latest"
+  }
 }
