@@ -1,39 +1,57 @@
-import { useState } from 'react';
-
-const articles = [
-  {
-    outlet: 'The City Ledger',
-    date: 'Today, 9:15 AM',
-    category: 'LOCAL',
-    title: 'Council debates a new plan for the downtown bus lanes',
-    description:
-      'City officials heard different views from residents and shop owners at Tuesday’s public meeting.',
-  },
-  {
-    outlet: 'Morning Report',
-    date: 'Today, 8:40 AM',
-    category: 'SCIENCE',
-    title: 'Researchers share early results from a coastal water study',
-    description:
-      'The first set of samples is being reviewed by other researchers before the next phase begins.',
-  },
-  {
-    outlet: 'The Daily Beacon',
-    date: 'Yesterday, 6:20 PM',
-    category: 'EDUCATION',
-    title: 'School board considers changes to the after-school program',
-    description:
-      'Families and teachers spoke about the proposal, which could change program hours next year.',
-  },
-];
+import { useEffect, useState } from 'react';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [activeAnalysisId, setActiveAnalysisId] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
+  const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [analysisError, setAnalysisError] = useState('');
+
+  useEffect(() => {
+    fetch('/api/articles')
+      .then((response) => {
+        if (!response.ok) throw new Error('The sample stories could not be loaded.');
+        return response.json();
+      })
+      .then((data) => setArticles(data.articles))
+      .catch(() => setLoadError('Could not connect to the sample stories. Check that the project server is running.'))
+      .finally(() => setLoading(false));
+  }, []);
+
   const visibleArticles = articles.filter((article) =>
     `${article.title} ${article.outlet} ${article.category} ${article.description}`
       .toLowerCase()
       .includes(searchTerm.trim().toLowerCase()),
   );
+
+  async function checkArticle(articleId) {
+    if (activeAnalysisId === articleId) {
+      setActiveAnalysisId(null);
+      return;
+    }
+
+    setActiveAnalysisId(articleId);
+    setAnalysis(null);
+    setAnalysisError('');
+    setAnalysisLoading(true);
+    try {
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ articleId }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'The sample could not be checked.');
+      setAnalysis(result);
+    } catch {
+      setAnalysisError('Could not reach the checker. Make sure the project server is running, then try again.');
+    } finally {
+      setAnalysisLoading(false);
+    }
+  }
 
   return (
     <main className="page-shell">
@@ -74,10 +92,14 @@ function App() {
         </div>
 
         <div className="article-list">
-          {visibleArticles.length > 0 ? visibleArticles.map((article) => {
+          {loading ? (
+            <div className="empty-state"><p>Loading sample stories…</p></div>
+          ) : loadError ? (
+            <div className="empty-state"><h3>Stories are unavailable</h3><p>{loadError}</p></div>
+          ) : visibleArticles.length > 0 ? visibleArticles.map((article, index) => {
             const originalIndex = articles.indexOf(article);
             return (
-            <article className="article-card" key={article.title}>
+            <article className="article-card" key={article.id}>
               <div className="article-index">{String(originalIndex + 1).padStart(2, '0')}</div>
               <div className="article-content">
                 <div className="article-meta">
@@ -88,14 +110,33 @@ function App() {
                 </div>
                 <h3>{article.title}</h3>
                 <p>{article.description}</p>
-                <button className="check-button" type="button" disabled>
-                  Check this news <span aria-hidden="true">↗</span>
+                <button className="check-button" type="button" onClick={() => checkArticle(article.id)} aria-expanded={activeAnalysisId === article.id}>
+                  {activeAnalysisId === article.id ? 'Hide notes' : 'Check this news'} <span aria-hidden="true">{activeAnalysisId === article.id ? '−' : '↗'}</span>
                 </button>
               </div>
               <div className={`article-art art-${originalIndex + 1}`} aria-hidden="true">
                 <span>{['CITY\nLIFE', 'FIELD\nNOTES', 'CAMPUS\nDESK'][originalIndex]}</span>
                 <i />
               </div>
+              {activeAnalysisId === article.id && (
+                <section className="analysis-panel" aria-live="polite" aria-label={`Sample notes for ${article.title}`}>
+                  <p className="analysis-label">SAMPLE CHECK <span>·</span> RULE-BASED DEMO</p>
+                  {analysisLoading ? <p className="analysis-message">Looking for a few language signals…</p> : null}
+                  {analysisError ? <p className="analysis-message">{analysisError}</p> : null}
+                  {analysis && (
+                    <>
+                      {analysis.signals.length ? analysis.signals.map((signal) => (
+                        <div className="signal-note" key={signal.passage}>
+                          <div className="signal-topline"><strong>{signal.category}</strong><span>Uncertainty: {signal.confidence}</span></div>
+                          <blockquote>{signal.passage}</blockquote>
+                          <p>{signal.explanation}</p>
+                        </div>
+                      )) : <p className="analysis-message">No words from this small demo list were found in the sample text.</p>}
+                      <p className="limitations-note">{analysis.limitations[0]}</p>
+                    </>
+                  )}
+                </section>
+              )}
             </article>
           ); }) : (
             <div className="empty-state">

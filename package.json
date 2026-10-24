@@ -4,11 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -k \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:client": "vite",
+    "dev:server": "node server.js",
     "build": "vite build"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
+    "concurrently": "latest",
+    "express": "latest",
     "vite": "latest",
     "react": "latest",
     "react-dom": "latest"

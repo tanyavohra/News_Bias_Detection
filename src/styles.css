@@ -51,8 +51,20 @@ kbd { font: 10px 'DM Mono', monospace; border: 1px solid #d6e2d5; padding: 2px 5
 .meta-separator { color: #b6b5ac; }
 .article-content h3 { margin: 10px 0 6px; font: 400 19px 'DM Serif Display', serif; letter-spacing: -.2px; }
 .article-content > p { margin: 0; color: #77786f; font-size: 11px; line-height: 1.55; max-width: 550px; }
-.check-button { display: inline-flex; gap: 10px; align-items: center; margin-top: 13px; background: none; border: 0; padding: 0; color: #85867d; font-size: 10px; cursor: not-allowed; }
+.check-button { display: inline-flex; gap: 10px; align-items: center; margin-top: 13px; background: none; border: 0; padding: 0; color: #356645; font-size: 10px; cursor: pointer; }
+.check-button:hover { color: #234b31; }
+.check-button:focus-visible { outline: 2px solid #4d8b62; outline-offset: 4px; }
 .check-button span { color: #427653; }
+.analysis-panel { grid-column: 2 / -1; background: #e8f1e6; border-left: 3px solid #5c936a; padding: 17px 19px; }
+.analysis-label { margin: 0 0 12px; color: #427653; font: 500 9px 'DM Mono', monospace; letter-spacing: .7px; }
+.analysis-label span { color: #99ae9a; margin: 0 4px; }
+.analysis-message { margin: 0; color: #637668; font-size: 12px; line-height: 1.6; }
+.signal-note { border-top: 1px solid #d0e0d0; padding-top: 12px; }
+.signal-topline { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #315c43; font-size: 11px; }
+.signal-topline > span { color: #798879; font: 9px 'DM Mono', monospace; }
+.signal-note blockquote { margin: 10px 0 6px; padding-left: 11px; border-left: 2px solid #7da486; color: #314d38; font: italic 14px 'DM Serif Display', serif; }
+.signal-note > p { margin: 0; color: #68786b; font-size: 11px; line-height: 1.55; }
+.limitations-note { margin: 13px 0 0; padding-top: 10px; border-top: 1px solid #d0e0d0; color: #78877a; font-size: 10px; line-height: 1.6; }
 .article-art { position: relative; min-height: 116px; display: grid; place-items: center; overflow: hidden; }
 .article-art > span { z-index: 1; white-space: pre-line; text-align: center; font: 500 12px/1.4 'DM Mono', monospace; letter-spacing: 1.5px; }
 .article-art i { position: absolute; width: 88px; height: 88px; border: 1px solid currentColor; border-radius: 50%; opacity: .5; }
@@ -74,6 +86,7 @@ footer { display: flex; justify-content: space-between; gap: 20px; padding: 26px
   .search-box { width: 100%; }
   .article-card { grid-template-columns: 25px minmax(0, 1fr); gap: 9px; }
   .article-art { grid-column: 2; grid-row: 2; min-height: 80px; }
+  .analysis-panel { grid-column: 1 / -1; }
   .article-art i { width: 70px; height: 70px; }
   .article-art > span { font-size: 10px; }
   footer { flex-direction: column; }
