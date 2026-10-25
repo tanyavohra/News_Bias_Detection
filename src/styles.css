@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Serif+Devanagari:wght@400;500&family=Poppins:wght@400;500;600;700&display=swap');
 
 :root {
   font-family: 'Poppins', sans-serif;
@@ -48,6 +48,9 @@ kbd { font: 10px 'DM Mono', monospace; border: 1px solid #d6e2d5; padding: 2px 5
 .article-index { color: #89998a; font: 10px 'DM Mono', monospace; padding-top: 4px; }
 .article-meta { display: flex; align-items: center; gap: 8px; color: #88897f; font-size: 10px; }
 .category { color: #427653; font: 500 9px 'DM Mono', monospace; letter-spacing: .4px; }
+.article-language { color: #718474; font: 500 9px 'DM Mono', 'Noto Sans Devanagari', sans-serif; }
+.article-content h3:lang(hi) { font-family: 'Noto Serif Devanagari', 'Nirmala UI', serif; }
+.article-content > p:lang(hi) { font-family: 'Noto Sans Devanagari', 'Nirmala UI', sans-serif; }
 .meta-separator { color: #b6b5ac; }
 .article-content h3 { margin: 10px 0 6px; font: 400 19px 'DM Serif Display', serif; letter-spacing: -.2px; }
 .article-content > p { margin: 0; color: #77786f; font-size: 11px; line-height: 1.55; max-width: 550px; }

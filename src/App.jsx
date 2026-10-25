@@ -64,6 +64,7 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           articleId: article.id,
+          articleUrl: article.url,
         }),
       });
       const result = await response.json();
@@ -83,7 +84,7 @@ function App() {
           <span className="mark">C</span>
           <span>clearView<span className="wordmark-dot">.</span></span>
         </a>
-        <div className="topbar-note"><span className="status-dot" /> Indian headlines · FreeNewsAPI</div>
+        <div className="topbar-note"><span className="status-dot" /> Indian headlines · English + हिंदी</div>
       </header>
 
       <section className="intro" id="top">
@@ -92,7 +93,7 @@ function App() {
         <p className="intro-copy">
           Browse headlines from India, search by topic, and look more closely at the language in each story.
         </p>
-        <div className="project-note"><span>✳</span> INDIA · ENGLISH · TOP HEADLINES</div>
+        <div className="project-note"><span>✳</span> INDIA · ENGLISH + हिंदी · TOP HEADLINES</div>
       </section>
 
       <section className="feed" aria-labelledby="feed-heading">
@@ -127,13 +128,19 @@ function App() {
               <div className="article-content">
                 <div className="article-meta">
                   <span className="category">{article.category}</span>
+                  <span className="article-language">{article.language === 'hi' ? 'हिंदी' : 'ENGLISH'}</span>
                   <span>{article.outlet}</span>
                   <span className="meta-separator">·</span>
                   <time>{article.date}</time>
                 </div>
-                <h3>{article.title}</h3>
-                <p>{article.description}</p>
-                <a className="source-link" href={article.url} target="_blank" rel="noreferrer">Read at {article.outlet} <span aria-hidden="true">↗</span></a>
+                <h3 lang={article.language}>{article.title}</h3>
+                <p lang={article.language}>{article.description}</p>
+                <a
+                  className="source-link"
+                  href={article.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >Read at {article.outlet} <span aria-hidden="true">↗</span></a>
                 <button className="check-button" type="button" onClick={() => checkArticle(article)} aria-expanded={activeAnalysisId === article.id}>
                   {activeAnalysisId === article.id ? 'Hide notes' : 'Check this news'} <span aria-hidden="true">{activeAnalysisId === article.id ? '−' : '↗'}</span>
                 </button>
@@ -144,6 +151,7 @@ function App() {
                   src={article.imageUrl}
                   alt=""
                   loading="lazy"
+                  referrerPolicy="no-referrer"
                   onError={() => setFailedImageIds((ids) => new Set(ids).add(article.id))}
                 />
               ) : (
