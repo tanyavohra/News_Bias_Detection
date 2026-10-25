@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k \"npm:dev:python\" \"npm:dev:server\" \"npm:dev:client\"",
+    "dev": "concurrently -k -n python,server,client \"python -m uvicorn analysis_service.main:app --reload --port 8000\" \"node server.js\" \"vite\"",
     "dev:python": "python -m uvicorn analysis_service.main:app --reload --port 8000",
     "dev:client": "vite",
     "dev:server": "node server.js",
