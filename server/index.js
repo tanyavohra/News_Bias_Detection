@@ -297,7 +297,8 @@ app.post('/api/analyze', async (request, response) => {
   try {
     const articleParams = new URLSearchParams({ url: publisherUrl, full_text: 'true' });
     const article = await freeNewsRequest(`article?${articleParams}`);
-    const text = article.text || article.description || article.title || '';
+    const hasFullArticle = typeof article.text === 'string' && article.text.trim().length > 0;
+    const text = (hasFullArticle ? article.text : article.description) || article.title || '';
     if (!text.trim()) return response.status(404).json({ error: 'FreeNewsAPI did not return article text for this story.' });
     const analysisResponse = await fetch(`${process.env.ANALYSIS_SERVICE_URL || 'http://localhost:8000'}/analyze`, {
       method: 'POST',
@@ -306,6 +307,7 @@ app.post('/api/analyze', async (request, response) => {
         article_id: articleId.slice(0, 100),
         title: article.title || '',
         text,
+        assessment_basis: hasFullArticle ? 'full_article' : 'description',
         publisher: article.sitename || article.host || '',
         authors: article.author ? [article.author] : [],
         url: publisherUrl,

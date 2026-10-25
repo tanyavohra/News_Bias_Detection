@@ -1,13 +1,5 @@
 import { useEffect, useState } from 'react';
 
-const CRITERIA_GROUPS = [
-  { title: 'Author & Publisher Intent', ids: ['conflicts_of_interest', 'organization_reputation'] },
-  { title: 'Structure & Framing', ids: ['headline_accuracy', 'bias_by_omission', 'story_placement'] },
-  { title: 'Sources & Representation', ids: ['source_diversity', 'citations_and_links', 'quote_integrity'] },
-  { title: 'Evidence & Factuality', ids: ['verifiable_data', 'fact_opinion_distinction', 'logical_fallacies'] },
-  { title: 'Language & Tone', ids: ['loaded_words', 'tone', 'vague_attribution'] },
-];
-
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [articles, setArticles] = useState([]);
@@ -167,33 +159,29 @@ function App() {
                   {analysis && (
                     <>
                       <div className="neutral-summary">
-                        <h4>AI summary <span>· based on article text</span></h4>
+                        <h4>AI summary <span>· {analysis.assessmentBasis === 'full_article' ? 'based on full article' : 'based on the description of the article'}</span></h4>
                         <p>{analysis.neutralSummary}</p>
                       </div>
-                      <div className="neutral-summary score-summary">
-                        <h4>Review score <span>· higher means more concerns identified</span></h4>
+                      {analysis.assessmentBasis === 'full_article' && <div className="neutral-summary score-summary">
+                        <h4>Aggregate concern score <span>· higher means more concerns identified</span></h4>
                         <p>{analysis.overallScore == null ? 'Not enough information to score' : `${analysis.overallScore} / 100`}</p>
-                        <p>{analysis.assessedCount} of {analysis.totalCriteria} attributes assessed</p>
-                        <p>Bias density: {analysis.biasDensity == null ? 'not available' : `${analysis.biasDensity}%`} ({analysis.flaggedSentenceCount} of {analysis.sentenceCount} sentences with a language or reasoning concern)</p>
+                        <p>{analysis.assessedCount} attributes scored; {analysis.assessedCount ? `${analysis.criteria.filter((criterion) => criterion.status === 'assessed').reduce((sum, criterion) => sum + criterion.score, 0)} concern points out of ${analysis.assessedCount * 4} possible` : 'no attributes had enough information to score'}.</p>
                         {analysis.inputTruncated ? <p>Only the first part of this article fit the review limit.</p> : null}
-                      </div>
-                      <h4 className="signals-heading">Your attributes</h4>
-                      {CRITERIA_GROUPS.map((group) => (
-                        <section className="criteria-group" key={group.title}>
-                          <h4>{group.title}</h4>
-                          {analysis.criteria.filter((criterion) => group.ids.includes(criterion.id)).map((criterion) => (
-                            <div className="signal-note" key={criterion.id}>
-                              <div className="signal-topline">
-                                <strong>{criterion.label}</strong>
-                                <span>{criterion.status === 'assessed' ? `Concern: ${criterion.score}/4` : 'Not enough information'}</span>
+                      </div>}
+                      {analysis.assessmentBasis === 'full_article' && (
+                        <section className="concern-quotes">
+                          <h4 className="signals-heading">Attributes of concern in highlighted quotes</h4>
+                          {analysis.criteria.filter((criterion) => criterion.status === 'assessed' && criterion.score > 0 && criterion.evidence.length > 0).length ? (
+                            analysis.criteria.filter((criterion) => criterion.status === 'assessed' && criterion.score > 0 && criterion.evidence.length > 0).map((criterion) => (
+                              <div className="signal-note" key={criterion.id}>
+                                <div className="signal-topline"><strong>{criterion.label}</strong><span>Concern: {criterion.score}/4</span></div>
+                                {criterion.evidence.map((passage, index) => <blockquote key={`${criterion.id}-${index}`}>{passage}</blockquote>)}
                               </div>
-                              <p>{criterion.reason}</p>
-                              {criterion.evidence.map((passage, index) => <blockquote key={`${criterion.id}-${index}`}>{passage}</blockquote>)}
-                            </div>
-                          ))}
+                            ))
+                          ) : <p className="analysis-message">No assessed concerns were tied to a supporting quote.</p>}
                         </section>
-                      ))}
-                      {analysis.limitations.map((limitation) => <p className="limitations-note" key={limitation}>{limitation}</p>)}
+                      )}
+                      {analysis.assessmentBasis === 'full_article' && analysis.limitations.map((limitation) => <p className="limitations-note" key={limitation}>{limitation}</p>)}
                     </>
                   )}
                 </section>
