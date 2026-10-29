@@ -131,7 +131,7 @@ def main():
         y_pred = [item["predicted_label"] for item in evaluated]
         cm = confusion_matrix(y_true, y_pred, labels=LABELS)
         precision, recall, f1, _ = precision_recall_fscore_support(
-            y_true, y_pred, labels=["Biased"], average="binary", zero_division=0
+            y_true, y_pred, labels=["Biased"], average="binary", pos_label="Biased", zero_division=0
         )
         metrics.update({
             "accuracy": round(float(accuracy_score(y_true, y_pred)), 4),
